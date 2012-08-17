@@ -1,0 +1,244 @@
+<script type="text/javascript" src="/javascripts/jquery.masonry.js"></script>
+<script type="text/javascript" src="/javascripts/discussion.js"></script>
+<script type="text/javascript" src="/javascripts/jquery.form.js"></script>
+
+<style>
+  .discus_web_url_link
+  {
+    color:#08384f;
+    font-size:12px;
+    text-align:left;
+    padding-left:0px;
+    float:left;
+    text-decoration:none;
+    max-width: 640px !important;
+    word-wrap: break-word;
+  }
+</style>
+<span class="blue_header">
+  <%= @discussion_group.name %>
+
+  <% if (!@discussion_group.is_public && @login_user.id == @discussion_group.user_id) || (@discussion_group.is_public && @login_user.is_member_of_discussion_group(@discussion_group.id))  %>
+    <a class="group_add_user_link" href="javascript:void(0);" onclick="jQuery('#public_group_user').fadeIn();jQuery('#public_group_user input[type=text]').val('');">Invite Users</a>
+  <% end %>
+  <% if !@discussion_group.is_public && @login_user.id == @discussion_group.user_id %>
+    <a class="group_add_user_link" href="javascript:void(0);" onclick="jQuery('#private_group_user').fadeIn();jQuery('#private_group_user input[type=text]').val('');">Add Users</a>
+  <% end %>
+  <a class="group_add_user_link" href="<%= url_for :controller => "discussion_groups", :action => "index" %>">Back To Groups</a>
+      <%= link_to "#{@discussion_group.name}'s album" ,{:controller=>:discussion_groups, :action=>:group_album, :id=>@discussion_group.id} ,:class=>"group_add_user_link" %>
+</span>
+<div class="group_desc_wrappr">
+  <pre class="group_desc">
+    <%= @discussion_group.description %>
+  </pre>
+</div>
+<div class="group_discussion_wrapper float_l">
+  <span class="yellow_header">
+    Discussions
+  </span>
+  <div class="grp_disc_form_wrpr">
+    <%= form_for :discussion, :url=>{:controller=>:discussion_groups, :action => 'create_discussion'}, :html => {:multipart => true, :id=>"discussion_form"} do |f|  %>
+      <%= text_area 'discussion', 'discussion', :class=>"flaot_l", :style=>"width: 400px;height: 40px;"%>
+      <br/><span id="urlError" class="form_error text_align_left"></span>
+
+      <span class="grp_disc_radios clear_both" style="padding-top: 0px;">
+        <div class="float_l">
+          <span class="clear_both discussion_frm_heading">Discussion Type</span>
+          <input type="radio" id="url_disc_radio" name="discussion[is_url]" value="true" checked/><label for="is_url">URL</label>
+          <input type="radio" id="non_url_disc_radio" name="discussion[is_url]" value="false"/><label for="is_url">Comment/Question</label>
+          <input type="hidden" name="discussion[share_type]" value="groups"/>
+          <input type="hidden" name="posted_to" value="<%= params[:id] %>"/>
+        </div>
+        <div class="padding_top_six dis_attachment_container clear_both" align="left">
+
+        </div>
+        <a class="discussion_action_link clear_both add_attachment_link" style="margin: 8px 0 10px 8px" href="javascript:void(0);" >Add Attachment</a>
+        <input type="submit" class="blue_btn float_l clear_both" value="Discuss" onclick="return check_url()"/>
+      </span>
+    <%end%>
+    <div class="hidden_element" id="attchment_content">
+      <div class="attachment">
+        <a class="remove_attachment" href="javascript:void(0);"><img title="Remove" src="/images/cross-icon.png" width="10px" height="10px"/></a>
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td>Description:</td>
+            <td><input type="text" name="attachment_desc[]" style="height: 15px;" class="discussion_attachment_desc"/>
+              <span class="error clear_both"></span>
+            </td>
+          </tr>
+          <tr>
+            <td>File:</td>
+            <td><input type="file" name="discussion_attachments[]" class="discussion_attachment_file"/>
+              <span class="error clear_both"></span>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="normal_disc_group_block">
+    <div id="result" class="float_l discussions_container">
+      <% if @discussions.blank? %><span class="no_disc_in_group">There are discussions available for you.</span><% end %>
+      <% @discussions.each do |discussion| %>
+        <%= render :partial => "simple_discussion_groups_block", :locals=>{:discussion => discussion}%>
+      <% end %>
+
+    </div>
+    <div class="loader_div" id="all_discussions_loader">
+      <img title="Loading" alt="Loading" src="/images/ajax-loader.gif"/>
+    </div>
+  </div>
+
+</div>
+<!--div class="group_mem_container float_r">
+  <span class="green_header">Group Members</span>
+  <div class="grp_members_outer_div">
+    <#% @discussion_group.group_users.each do |u| %>
+      <div class="user_pic_2 follower_following_img_block" style="padding: 5px;">
+        <a href="<%#= u.user.profile_path %>">
+          <img class="medium_user_image" src="<%#= u.user.profile_pic(:medium) %>"/></a>
+        <span><a class="user_name" style="width:50px;" href="/users/profile/4"><%#= u.user.username %></a></span>
+      </div>
+    <#% end %>
+
+  </div>
+
+</div-->
+
+<script type="text/javascript">
+  (function($) {
+
+    $(function(){
+      apply_scroll_effect_to("grp_members_outer_div")
+      apply_scroll_effects();
+     
+      //jQuery(".grp_members_outer_div").masonry({
+      // itemSelector: '.follower_following_img_block'
+      // });
+
+    });
+
+  })(jQuery);
+
+  var added_from_site = false;
+  applyPhotoEffects();
+  jQuery(document).ready(function(){
+    jQuery(".discussions_container").masonry( "reload" );
+
+  });
+  function applyPhotoEffects()
+  {
+    jQuery(".discussions_container").masonry({
+      itemSelector: '.discussions, .disc_with_pdf, .disc_with_doc, .disc_with_picture, .commments_questions'
+    });
+  }
+
+  jQuery(document).ready(function(){
+    set_effects();
+
+    jQuery(".add_attachment_link").click(function(){
+      var $attchment = jQuery("#attchment_content .attachment").clone();
+      jQuery(".dis_attachment_container").append($attchment);
+    });
+
+    jQuery(".remove_attachment").live("click",function(){
+      jQuery(this).closest(".attachment").remove();
+    });
+
+    jQuery('#discussion_form').ajaxForm(function() {
+      //nothing
+    });
+  });
+
+
+  function validate_email_address_form()
+  {
+    flag = true;
+    var current_email = jQuery("#private_group_user_email").val();
+    var emailRegExp=/^([a-zA-Z0-9_.-])+@([a-zA-Z0-9_.-])+\.([a-zA-Z])+([a-zA-Z])+/;
+    error ="";
+    if(current_email=="" || current_email=="Enter your email")
+    {
+      flag = false;
+      error = "Please enter email";
+    }
+    else if(!current_email.match(emailRegExp))
+    {
+      flag = false;
+      error = "Please enter valid email";
+    }
+    jQuery("#private_group_user_error").html(error);
+
+    return flag;
+  }
+
+  (function() {
+    var page = 1,
+    loading = false,
+    finish = false;
+
+    function nearBottomOfPage() {
+      return ($(window).scrollTop() > $(document).height() - $(window).height() - 100) && ($(document).height() - $(window).height() - 100)>0;
+    }
+
+    function finish() {
+      finish = true;
+    }
+
+    $(window).scroll(function(){
+      if (loading) {
+        return;
+      }
+
+      if(nearBottomOfPage() && !finish) {
+        loading=true;
+        jQuery(".loader_div").show();
+        page++;
+        $.get('/load_group_discussions_on_scroll/<%= @discussion_group.id %>?page=' + page, function(data){
+
+          jQuery(".discussions_container").append($(data)).masonry( 'appended', $(data), true );
+          jQuery(".discussions_container").masonry( "reload" );
+          jQuery(".loader_div").hide();
+        });
+      }
+    });
+
+    if(!nearBottomOfPage())
+    {
+      jQuery(".loader_div").hide();
+    }
+
+  }());
+
+  //check the discussion type
+  function check_discussion_type() {
+    var selected_value = jQuery('#discussion_type').val();
+    if(selected_value == 0){
+      jQuery('#disc_title title_text').hide();jQuery('#').hide();
+      jQuery('#attchment_content').hide();jQuery('#disc_type_id').show();
+      jQuery('#disc_text_area').show();
+    }
+
+    else if(selected_value == 1){
+      jQuery('#disc_title').show();
+      jQuery('#title_text').show();
+    }
+
+    else if(selected_value == 2){
+      jQuery('#disc_title').hide();jQuery('#disc_url_comment').hide();
+      jQuery('#attchment_content').show();jQuery('#disc_type_id').show();
+    }
+
+    else if (selected_value == 3){
+      jQuery('#disc_title').hide();
+      jQuery('#title_text').hide();
+    }
+
+  }
+</script>
+
+<%= render :partial => "add_user_to_groups", :layout => false %>
+<%= render :partial => "invite_user_to_groups", :layout => false %>
+

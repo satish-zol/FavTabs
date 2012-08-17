@@ -1,0 +1,10 @@
+one:
+ id: 1
+ name: "My group"
+ user_id : 1
+
+two:
+ id: 2
+ name: "My group"
+ user_id : 2
+

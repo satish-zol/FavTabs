@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  email: MyString
+  invitable_id: 1
+  invitable_type: MyString
+
+two:
+  email: MyString
+  invitable_id: 1
+  invitable_type: MyString

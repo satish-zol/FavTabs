@@ -1,0 +1,7 @@
+<%= @username %> is discussing
+<% if @discussion.is_url %>
+  <a href="<%= @discussion.discussion %>"><%= @discussion.site_title %></a>
+  Sign up to join the discussion.
+<% else %>
+  <%= @discussion.discussion %>
+<% end %>

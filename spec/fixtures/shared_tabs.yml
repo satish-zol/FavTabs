@@ -1,0 +1,17 @@
+one:
+ id: 1
+ shareable_id: 1
+ group_id : 1
+ shareable_type: "Picture"
+
+two:
+ id: 2
+ shareable_id: 1
+ group_id : 2
+ shareable_type: "Picture"
+
+three:
+ id: 3
+ shareable_id: 1
+ group_id : 1
+ shareable_type: "Album"

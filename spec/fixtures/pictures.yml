@@ -1,0 +1,13 @@
+one:
+ id: 1
+ photo_detail: "dsdfs"
+ share_type: 0
+ album_id : 1
+ photo_file_name: xyz.jpg
+
+two:
+ id: 2
+ photo_detail: "dsdfs"
+ share_type: 0
+ album_id : 1
+ photo_file_name: xyz.jpg

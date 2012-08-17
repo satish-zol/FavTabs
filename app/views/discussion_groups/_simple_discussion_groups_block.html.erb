@@ -1,0 +1,43 @@
+<%# discussions.each do |discussion|%>
+  <!-- Photo starts here -->
+  <% host_url = "http://"+request.host_with_port %>
+
+  <div class="<%= box_border_shadow(discussion)%> picture_<%= discussion.id %> masonry_block" >
+    <div class="discussion_text_cotainer float_l">
+      <%  if discussion.is_url %>
+        <a href="javascript:void(0);" class="discus_web_url_link" onclick="show_discussion(<%= discussion.id %>);"><%= discussion.site_title %></a>
+      <% else %>
+        <a href="javascript:void(0);" class="discus_web_url_link" onclick="show_discussion(<%= discussion.id %>);"><%= truncate(discussion.discussion,:length=>200) %></a>
+      <% end %>
+      <span class="comment_count">
+        <span class="discussion_comm_count_<%= discussion.id %>">
+          by <a href="<%= discussion.user_discussions[0].user.profile_path %>" class="action_link" style="text-decoration:none;font-size: 10px;" title="<%= discussion.user_discussions[0].user.username %>"><%= discussion.user_discussions[0].user.username %></a>
+          at <%= discussion.created_at %></span></span>
+      <div class="disc_attachments_div clear_both" align="left">
+        <% discussion.discussion_attachments.each do |att| %>
+          <a href="<%= host_url+""  %><%= att.file %>" class="<%= att.file_content_type=="application/pdf" ? "pdf_file": "word_file" %> disc_attachment_link clear_both"><%= att.description %></a>
+        <% end %>
+      </div>
+
+      <div class="post_comment_div">
+        <span class="clear_both delete_discussion_div">
+          <% if @login_user.is_admin? %>
+            <a href="javascript:void(0);" class="discussion_action_link" onclick="delete_discussion(<%= discussion.id %>,jQuery(this))">Delete</a>
+          <% end %>
+        </span>
+      </div>
+        <span class="gold_star_display" title="<%= discussion.average_ratings %>"><span style="font-weight:bold;font-size: 11px"><%= discussion.average_ratings %></span></span>
+        <span class="comment_circle" title="<%=  discussion.all_comments_count(discussion.id) %>"><%=  discussion.all_comments_count(discussion.id) %></span>
+    </div>
+
+  </div>
+  <!-- Photo ends here -->
+
+<%# end %>
+
+<script type="text/javascript">
+  jQuery(document).ready(function(){
+    set_effects();
+  });
+
+</script>

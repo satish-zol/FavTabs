@@ -1,0 +1,15 @@
+
+<% if @message=="Discussion posted sucessfully."  %>
+    jQuery(".no_disc_in_group").html('');
+    var $items = jQuery("<%= escape_javascript(render :partial => "discussion_groups/simple_discussion_groups_block", :locals=>{:discussion=>@lastest_discussion[0]}).html_safe %>");
+    jQuery("#result").prepend($items).masonry( 'appended', $items, true );
+    setTimeout('jQuery("#result").masonry( "reload" );',500);
+<% else %>
+  display_flash_message("<%= escape_javascript(@message).html_safe %>");
+<% end %>
+
+
+jQuery(".dis_attachment_container").html("");
+set_effects();
+
+is_sending = false;

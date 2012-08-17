@@ -1,0 +1,7 @@
+<p>Here is the post from <%= @username %>:</p> 
+<% if @discussion.is_url %>
+  <a href="<%= @discussion.discussion %>"><%= @discussion.site_title %></a>
+<% else %>
+  <%= @discussion.discussion %>
+<% end %>
+<p><a href="<%= @url %>">Sign up</a> to join the discussion.</p>
